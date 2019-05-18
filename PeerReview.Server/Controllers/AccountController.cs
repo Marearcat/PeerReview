@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using PeerReview.Core.Account;
+using PeerReview.Core.DTOs;
 using PeerReview.Server.Data;
 
 namespace PeerReview.Server.Controllers
@@ -14,48 +16,39 @@ namespace PeerReview.Server.Controllers
     public class AccountController : ControllerBase
     {
         readonly ApplicationDbContext context;
+        readonly UserManager<User> _userManager;
+        readonly SignInManager<User> _signInManager;
 
-        public AccountController(ApplicationDbContext context)
+        public AccountController(ApplicationDbContext context, SignInManager<User> signInManager, UserManager<User> userManager)
         {
+            _signInManager = signInManager;
+            _userManager = userManager;
             this.context = context;
         }
 
-        // GET: api/Account
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET: api/Account/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST: api/Account
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<bool> Register(RegistrationDTO model)
         {
-        }
-
-        // PUT: api/Account/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        [HttpGet]
-        public string Hello()
-        {
-            return "World";
-        }
-
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            if (ModelState.IsValid)
+            {
+                User user = new User { Email = model.Email, UserName = model.Email, FullName = model.FullName, Nick = model.Nick };
+                // добавляем пользователя
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    // установка куки
+                    await _signInManager.SignInAsync(user, false);
+                    return true;
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+            }
+            return false;
         }
     }
 }
