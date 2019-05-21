@@ -8,6 +8,6 @@ namespace PeerReview.Core.Account
         public string Id { get; set; }
         public string Email { get; set; }
         public string InviterId { get; set; }
-        public string Confirmed { get; set; }
+        public bool Confirmed { get; set; }
     }
 }

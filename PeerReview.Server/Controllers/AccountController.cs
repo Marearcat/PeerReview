@@ -49,6 +49,9 @@ namespace PeerReview.Server.Controllers
                 {
                     // установка куки
                     await _signInManager.SignInAsync(user, false);
+                    var invite = context.Invites.First(x => x.Id == model.Key);
+                    invite.Confirmed = true;
+                    context.Invites.Update(invite);
                     return true;
                 }
                 else
@@ -97,6 +100,84 @@ namespace PeerReview.Server.Controllers
             var inviterId = context.Invites.First(x => x.Email == user.Id).InviterId;
             model.Inviter = context.Users.First(x => x.Id == inviterId).Email;
             return model;
+        }
+
+        [Route("[action]")]
+        [HttpGet]
+        public async Task<EditUser> Edit()
+        {
+            var user = await _userManager.FindByEmailAsync(User.Identity.Name);
+            var model = new EditUser
+            {
+                Nick = user.Nick,
+                FullName = user.FullName,
+                Specs = context.Specs.Select(x => x.Name)
+            };   
+            return model;
+        }
+
+        [Route("[action]")]
+        [HttpPost]
+        public async Task<bool> PostEdit(EditUser model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(User.Identity.Name);
+                if (user != null)
+                {
+                    user.Nick = model.Nick;
+                    user.FullName = model.FullName;
+                    context.UserToSpecs.RemoveRange(context.UserToSpecs.Where(x => x.UserId == user.Id));
+                    var specs = context.Specs;
+                    foreach (var spec in model.Specs)
+                    {
+                        var specId = context.Specs.First(x => x.Name == spec);
+                        context.UserToSpecs.Add(new Core.Unite.UserToSpec { SpecId = spec, UserId = user.Id });
+                    }
+                    context.SaveChanges();
+                    var result = await _userManager.UpdateAsync(user);
+                    return result.Succeeded;
+                }
+            }
+            return false;
+        }
+
+        [Route("[action]")]
+        [HttpPost]
+        public async Task<bool> ChangePassword(string NewPassword)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(User.Identity.Name);
+                if (user != null)
+                {
+                    var _passwordValidator =
+                        HttpContext.RequestServices.GetService(typeof(IPasswordValidator<User>)) as IPasswordValidator<User>;
+                    var _passwordHasher =
+                        HttpContext.RequestServices.GetService(typeof(IPasswordHasher<User>)) as IPasswordHasher<User>;
+
+                    IdentityResult result =
+                        await _passwordValidator.ValidateAsync(_userManager, user, NewPassword);
+                    if (result.Succeeded)
+                    {
+                        user.PasswordHash = _passwordHasher.HashPassword(user, NewPassword);
+                        await _userManager.UpdateAsync(user);
+                        return true;
+                    }
+                    else
+                    {
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Пользователь не найден");
+                }
+            }
+            return false;
         }
     }
 }

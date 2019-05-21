@@ -15,7 +15,7 @@ export class ArticleGetComponent {
 
   constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
     this.http = http;
-    this.http.get<string>('https://localhost:44384/api/article?id=kek', { responseType: 'text' as 'json' }).subscribe(result => {
+    this.http.get<string>('https://localhost:44384/api/article?id=kek').subscribe(result => {
       this.value = result;
     }, error => console.error(error));
   }
