@@ -6,7 +6,6 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
-import { ArticleGetComponent } from './article/get/article.get.component';
 import { AccountRegisterComponent } from './account/register/account.register.component'
 
 @NgModule({
@@ -15,7 +14,6 @@ import { AccountRegisterComponent } from './account/register/account.register.co
     NavMenuComponent,
     HomeComponent,
     AccountRegisterComponent,
-    ArticleGetComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -24,7 +22,6 @@ import { AccountRegisterComponent } from './account/register/account.register.co
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'account/register', component: AccountRegisterComponent },
-      { path: 'article/get', component: ArticleGetComponent },
     ])
   ],
   providers: [],

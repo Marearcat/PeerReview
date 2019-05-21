@@ -1,8 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router } from "@angular/router";
-import { ResponseType } from '@angular/http';
-import { text } from '@angular/core/src/render3/instructions';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-article-get',

@@ -15,6 +15,7 @@ export class AccountRegisterComponent {
   constructor(http: HttpClient, router: Router) {
     this.http = http;
     this.complete = false;
+    
     this.getPage();
   }
 
@@ -27,6 +28,10 @@ export class AccountRegisterComponent {
     this.http.post<boolean>('https://localhost:44384/api/account/register', body).subscribe(result => { this.complete = result });
   }
 
+  authorized(): boolean {
+    this.http.get<boolean>('https://localhost:44384/api/account/Autorized').subscribe(result => { return result });
+    return false;
+  }
 }
 
 interface Registration {

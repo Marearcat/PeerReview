@@ -33,7 +33,10 @@ namespace PeerReview.Server.Controllers
 
         [Route("[action]")]
         [HttpGet]
-        public IEnumerable<string> Register() => context.Specs.Select(x => x.Name);
+        public IEnumerable<string> Register()
+        {
+            return context.Specs.Select(x => x.Name);
+        }
 
         [Route("[action]")]
         [HttpPost]
