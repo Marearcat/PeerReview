@@ -99,6 +99,49 @@ namespace PeerReview.Server.Controllers
         public async Task<IEnumerable<Order>> OrdersAsync()
         {
             var user = await _userManager.FindByEmailAsync(User.Identity.Name);
+            foreach (var order in context.Orders.Where(x => x.Deadline < DateTime.Now))
+            {
+                context.BlackList.Add(new Core.Unite.BlackList
+                {
+                    ArticleId = order.ActicleId,
+                    UserId = order.UserId
+                });
+                if (_userManager.Users.Any(x => !context.BlackList.Any(a => a.UserId == x.Id && a.ArticleId == order.ActicleId)
+                     && !context.Orders.Any(b => b.ActicleId == order.ActicleId && b.UserId == x.Id)
+                     && context.UserToSpecs.Any(c => c.SpecId == context.Loop.First(d => d.Id == order.ActicleId).SpecId & c.UserId == x.Id)))
+                {
+                    bool flag = false;
+                    while (!flag)
+                    {
+                        var length = context.UserToSpecs.Where(x => x.SpecId == context.Loop.First(y => y.Id == order.ActicleId).SpecId && x.UserId != user.Id).Count() - 1;
+                        var enumerator = _userManager.Users.GetEnumerator();
+                        var loop = context.Loop.First(x => x.Id == order.ActicleId);
+                        Random rnd = new Random();
+                        var index = rnd.Next(0, length);
+                        while (index > 0)
+                        {
+                            enumerator.MoveNext();
+                            index--;
+                        }
+                        user = enumerator.Current;
+                        if (!context.Orders.Any(x => x.UserId == user.Id && x.ActicleId == loop.Id) && !context.BlackList.Any(x => x.UserId == user.Id && x.ArticleId == loop.Id))
+                        {
+                            var time = DateTime.Now;
+                            time.AddDays(5);
+                            context.Orders.Add(new Order { Name = loop.Name, UserId = user.Id, ActicleId = loop.Id, Deadline = time });
+                            flag = true;
+                        }
+                        context.Orders.Remove(order);
+                    }
+                }
+                else
+                {
+                    context.Loop.Remove(context.Loop.First(x => x.Id == review.ArticleId));
+                    context.Orders.RemoveRange(context.Orders.Where(x => x.ActicleId == review.ArticleId));
+                    context.Reviews.RemoveRange(context.Reviews.Where(x => x.ArticleId == review.ArticleId));
+                }
+            }
+            context.SaveChanges();
             return context.Orders.Where(x => x.UserId == user.Id);
         }
     }
