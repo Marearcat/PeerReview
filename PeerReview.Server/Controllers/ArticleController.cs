@@ -67,11 +67,11 @@ namespace PeerReview.Server.Controllers
                             index--;
                         }
                         user = enumerator.Current;
-                        if (!context.Orders.Any(x => x.UserId == user.Id && x.ActicleId == loop.Id) && !context.BlackList.Any(x => x.UserId == user.Id && x.ArticleId == loop.Id))
+                        if (!context.Orders.Any(x => x.UserId == user.Id && x.ArticleId == loop.Id) && !context.BlackList.Any(x => x.UserId == user.Id && x.ArticleId == loop.Id))
                         {
                             var time = DateTime.Now;
                             time.AddDays(5);
-                            context.Orders.Add(new Order { Name = loop.Name, UserId = user.Id, ActicleId = loop.Id, Deadline = time });
+                            context.Orders.Add(new Order { Name = loop.Name, UserId = user.Id, ArticleId = loop.Id, Deadline = time });
                             count--;
                         }
                     }

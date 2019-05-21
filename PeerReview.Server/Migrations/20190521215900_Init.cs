@@ -52,6 +52,8 @@ namespace PeerReview.Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
+                    UserId = table.Column<string>(nullable: true),
+                    SpecId = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Path = table.Column<string>(nullable: true),
                     Rating = table.Column<int>(nullable: false)
@@ -81,7 +83,7 @@ namespace PeerReview.Server.Migrations
                     Id = table.Column<string>(nullable: false),
                     Email = table.Column<string>(nullable: true),
                     InviterId = table.Column<string>(nullable: true),
-                    Confirmed = table.Column<string>(nullable: true)
+                    Confirmed = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -93,6 +95,8 @@ namespace PeerReview.Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
+                    UserId = table.Column<string>(nullable: true),
+                    SpecId = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Path = table.Column<string>(nullable: true),
                     NeedReviews = table.Column<int>(nullable: false)
@@ -109,7 +113,7 @@ namespace PeerReview.Server.Migrations
                     Id = table.Column<string>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     UserId = table.Column<string>(nullable: true),
-                    ActicleId = table.Column<string>(nullable: true),
+                    ArticleId = table.Column<string>(nullable: true),
                     Deadline = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>

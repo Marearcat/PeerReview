@@ -10,7 +10,7 @@ using PeerReview.Server.Data;
 namespace PeerReview.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190518160611_Init")]
+    [Migration("20190521215900_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -183,7 +183,7 @@ namespace PeerReview.Server.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Confirmed");
+                    b.Property<bool>("Confirmed");
 
                     b.Property<string>("Email");
 
@@ -205,6 +205,10 @@ namespace PeerReview.Server.Migrations
 
                     b.Property<int>("Rating");
 
+                    b.Property<string>("SpecId");
+
+                    b.Property<string>("UserId");
+
                     b.HasKey("Id");
 
                     b.ToTable("Bank");
@@ -221,6 +225,10 @@ namespace PeerReview.Server.Migrations
 
                     b.Property<string>("Path");
 
+                    b.Property<string>("SpecId");
+
+                    b.Property<string>("UserId");
+
                     b.HasKey("Id");
 
                     b.ToTable("Loop");
@@ -231,7 +239,7 @@ namespace PeerReview.Server.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ActicleId");
+                    b.Property<string>("ArticleId");
 
                     b.Property<DateTime>("Deadline");
 

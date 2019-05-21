@@ -31,7 +31,7 @@ namespace PeerReview.Server.Controllers
             var user = await _userManager.FindByEmailAsync(User.Identity.Name);
             if (review.Accept)
             {
-                var order = context.Orders.First(x => x.UserId == user.Id && x.ActicleId == review.ArticleId);
+                var order = context.Orders.First(x => x.UserId == user.Id && x.ArticleId == review.ArticleId);
                 context.Reviews.Add(new Core.Models.Review { Mark = review.Rating, ArticleId = review.ArticleId, UserId = user.Id });
                 if (context.Loop.First(x => x.Id == review.ArticleId).NeedReviews == context.Reviews.Where(x => x.ArticleId == review.ArticleId).Count())
                 {
@@ -55,9 +55,9 @@ namespace PeerReview.Server.Controllers
             else
             {
                 context.BlackList.Add(new Core.Unite.BlackList { UserId = user.Id, ArticleId = review.ArticleId });
-                context.Orders.Remove(context.Orders.First(x => x.UserId == user.Id && x.ActicleId == review.ArticleId));
+                context.Orders.Remove(context.Orders.First(x => x.UserId == user.Id && x.ArticleId == review.ArticleId));
                 if (_userManager.Users.Any(x => !context.BlackList.Any(a => a.UserId == x.Id && a.ArticleId == review.ArticleId)
-                     && !context.Orders.Any(b => b.ActicleId == review.ArticleId && b.UserId == x.Id)
+                     && !context.Orders.Any(b => b.ArticleId == review.ArticleId && b.UserId == x.Id)
                      && context.UserToSpecs.Any(c => c.SpecId == context.Loop.First(d => d.Id == review.ArticleId).SpecId & c.UserId == x.Id)))
                 {
                     bool flag = false;
@@ -74,11 +74,11 @@ namespace PeerReview.Server.Controllers
                             index--;
                         }
                         user = enumerator.Current;
-                        if (!context.Orders.Any(x => x.UserId == user.Id && x.ActicleId == loop.Id) && !context.BlackList.Any(x => x.UserId == user.Id && x.ArticleId == loop.Id))
+                        if (!context.Orders.Any(x => x.UserId == user.Id && x.ArticleId == loop.Id) && !context.BlackList.Any(x => x.UserId == user.Id && x.ArticleId == loop.Id))
                         {
                             var time = DateTime.Now;
                             time.AddDays(5);
-                            context.Orders.Add(new Order { Name = loop.Name, UserId = user.Id, ActicleId = loop.Id, Deadline = time });
+                            context.Orders.Add(new Order { Name = loop.Name, UserId = user.Id, ArticleId = loop.Id, Deadline = time });
                             flag = true;
                         }
                     }
@@ -86,7 +86,7 @@ namespace PeerReview.Server.Controllers
                 else
                 {
                     context.Loop.Remove(context.Loop.First(x => x.Id == review.ArticleId));
-                    context.Orders.RemoveRange(context.Orders.Where(x => x.ActicleId == review.ArticleId));
+                    context.Orders.RemoveRange(context.Orders.Where(x => x.ArticleId == review.ArticleId));
                     context.Reviews.RemoveRange(context.Reviews.Where(x => x.ArticleId == review.ArticleId));
                 }
                 context.SaveChanges();
@@ -103,19 +103,19 @@ namespace PeerReview.Server.Controllers
             {
                 context.BlackList.Add(new Core.Unite.BlackList
                 {
-                    ArticleId = order.ActicleId,
+                    ArticleId = order.ArticleId,
                     UserId = order.UserId
                 });
-                if (_userManager.Users.Any(x => !context.BlackList.Any(a => a.UserId == x.Id && a.ArticleId == order.ActicleId)
-                     && !context.Orders.Any(b => b.ActicleId == order.ActicleId && b.UserId == x.Id)
-                     && context.UserToSpecs.Any(c => c.SpecId == context.Loop.First(d => d.Id == order.ActicleId).SpecId & c.UserId == x.Id)))
+                if (_userManager.Users.Any(x => !context.BlackList.Any(a => a.UserId == x.Id && a.ArticleId == order.ArticleId)
+                     && !context.Orders.Any(b => b.ArticleId == order.ArticleId && b.UserId == x.Id)
+                     && context.UserToSpecs.Any(c => c.SpecId == context.Loop.First(d => d.Id == order.ArticleId).SpecId & c.UserId == x.Id)))
                 {
                     bool flag = false;
                     while (!flag)
                     {
-                        var length = context.UserToSpecs.Where(x => x.SpecId == context.Loop.First(y => y.Id == order.ActicleId).SpecId && x.UserId != user.Id).Count() - 1;
+                        var length = context.UserToSpecs.Where(x => x.SpecId == context.Loop.First(y => y.Id == order.ArticleId).SpecId && x.UserId != user.Id).Count() - 1;
                         var enumerator = _userManager.Users.GetEnumerator();
-                        var loop = context.Loop.First(x => x.Id == order.ActicleId);
+                        var loop = context.Loop.First(x => x.Id == order.ArticleId);
                         Random rnd = new Random();
                         var index = rnd.Next(0, length);
                         while (index > 0)
@@ -124,11 +124,11 @@ namespace PeerReview.Server.Controllers
                             index--;
                         }
                         user = enumerator.Current;
-                        if (!context.Orders.Any(x => x.UserId == user.Id && x.ActicleId == loop.Id) && !context.BlackList.Any(x => x.UserId == user.Id && x.ArticleId == loop.Id))
+                        if (!context.Orders.Any(x => x.UserId == user.Id && x.ArticleId == loop.Id) && !context.BlackList.Any(x => x.UserId == user.Id && x.ArticleId == loop.Id))
                         {
                             var time = DateTime.Now;
                             time.AddDays(5);
-                            context.Orders.Add(new Order { Name = loop.Name, UserId = user.Id, ActicleId = loop.Id, Deadline = time });
+                            context.Orders.Add(new Order { Name = loop.Name, UserId = user.Id, ArticleId = loop.Id, Deadline = time });
                             flag = true;
                         }
                         context.Orders.Remove(order);
@@ -136,9 +136,9 @@ namespace PeerReview.Server.Controllers
                 }
                 else
                 {
-                    context.Loop.Remove(context.Loop.First(x => x.Id == review.ArticleId));
-                    context.Orders.RemoveRange(context.Orders.Where(x => x.ActicleId == review.ArticleId));
-                    context.Reviews.RemoveRange(context.Reviews.Where(x => x.ArticleId == review.ArticleId));
+                    context.Loop.Remove(context.Loop.First(x => x.Id == order.ArticleId));
+                    context.Orders.RemoveRange(context.Orders.Where(x => x.ArticleId == order.ArticleId));
+                    context.Reviews.RemoveRange(context.Reviews.Where(x => x.ArticleId == order.ArticleId));
                 }
             }
             context.SaveChanges();

@@ -181,7 +181,7 @@ namespace PeerReview.Server.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Confirmed");
+                    b.Property<bool>("Confirmed");
 
                     b.Property<string>("Email");
 
@@ -203,6 +203,10 @@ namespace PeerReview.Server.Migrations
 
                     b.Property<int>("Rating");
 
+                    b.Property<string>("SpecId");
+
+                    b.Property<string>("UserId");
+
                     b.HasKey("Id");
 
                     b.ToTable("Bank");
@@ -219,6 +223,10 @@ namespace PeerReview.Server.Migrations
 
                     b.Property<string>("Path");
 
+                    b.Property<string>("SpecId");
+
+                    b.Property<string>("UserId");
+
                     b.HasKey("Id");
 
                     b.ToTable("Loop");
@@ -229,7 +237,7 @@ namespace PeerReview.Server.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ActicleId");
+                    b.Property<string>("ArticleId");
 
                     b.Property<DateTime>("Deadline");
 
